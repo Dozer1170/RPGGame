@@ -1,0 +1,62 @@
+Basic Attack
+{
+	spellId:1
+	requiredLevel:1
+	classRestricted:false
+	targetType:ENEMY
+	mainStat:Strength
+	mainStatRatio:0.5
+	secondaryCost:0
+	weaponAttack:true
+}
+
+Power Attack
+{
+	spellId:2
+	requiredLevel:2
+	classRestricted:true
+	targetType:ENEMY
+	entityClass:WARRIOR
+	secondaryCost:15
+	weaponAttack:true
+	damageBonusPerLevel:2
+	mainStat:STRENGTH
+	mainStatRatio:0.5
+	stackable:false
+	casterMod
+	[
+		statAffected:STRENGTH
+		percentage:1.05
+		duration:2
+	]
+}
+
+Vampiric Strike
+{
+	spellId:4
+	requiredLevel:3
+	classRestricted:true
+	targetType:ENEMY
+	entityClass:WARRIOR
+	secondaryCost:20
+	weaponAttack:true
+	damageBonusPerLevel:1
+	mainStat:STRENGTH
+	mainStatRatio:0.5
+	vampPercent:0.5
+}
+
+Flash of Light
+{
+	spellId:3
+	requiredLevel:2
+	classRestricted:true
+	targetType:FRIENDLY
+	entityClass:LIGHT_WEAVER
+	secondaryCost:90
+	secondaryCostPerLevel:5
+	mainStat:CHARISMA
+	mainStatRatio:0.5
+	healBase:100
+	healBonusPerLevel:5
+}
