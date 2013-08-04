@@ -9,9 +9,7 @@ public class StageManager : MonoBehaviour
 	[SerializeField] private Encounter[] _encounters;
 	[SerializeField] private float _delayBetweenEncounters = 4f;
 	[SerializeField] private Transform[] _leftCharacterMounts;
-	[SerializeField] private Transform[] _leftBarMounts;
 	[SerializeField] private Transform[] _rightCharacterMounts;
-	[SerializeField] private Transform[] _rightBarMounts;
 	
 	private int _leftMountIndex = 0, _rightMountIndex = 0;
 	
@@ -34,7 +32,7 @@ public class StageManager : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		MountToSide(GameManager.Instance.Player, _leftCharacterMounts, _leftBarMounts, ref _leftMountIndex);
+		MountToSide(GameManager.Instance.Player, _leftCharacterMounts, ref _leftMountIndex);
 		NextFight();
 	}
 	
@@ -72,7 +70,6 @@ public class StageManager : MonoBehaviour
 		yield return new WaitForSeconds(_delayBetweenEncounters);
 		
 		ClearMounts(_rightCharacterMounts);
-		ClearMounts(_rightBarMounts);
 		NextFight();
 	}
 	
@@ -86,6 +83,7 @@ public class StageManager : MonoBehaviour
 			GameObject entityObj = (GameObject) Instantiate(entity);
 			CombatEntity combatEntity = (CombatEntity)entityObj.GetComponent(typeof(CombatEntity));
 			combatEntity.Controller.InitSpellBook();
+			combatEntity.SpriteController.FlipSprite();
 			combatants.Add(combatEntity);
 			
 			if(_scaleToPlayerLevel)
@@ -93,7 +91,7 @@ public class StageManager : MonoBehaviour
 				combatEntity.Stats.AddXP(CombatStats.GetLevelXPValue(GameManager.Instance.Player.Stats.Level - 1));
 			}
 			
-			MountToSide(combatEntity, _rightCharacterMounts, _rightBarMounts, ref _rightMountIndex);
+			MountToSide(combatEntity, _rightCharacterMounts, ref _rightMountIndex);
 		}
 		
 		//TODO Add player's team
@@ -102,16 +100,16 @@ public class StageManager : MonoBehaviour
 		CombatManager.Instance.StartCombat(combatants);
 	}
 	
-	private void MountToSide(CombatEntity entity, Transform[] characterMounts, Transform[] barMounts, ref int mountIndex)
+	private void MountToSide(CombatEntity entity, Transform[] characterMounts, ref int mountIndex)
 	{
-		entity.transform.parent = characterMounts[mountIndex];
+		entity.transform.parent = characterMounts[mountIndex++];
 		entity.transform.localPosition = Vector3.zero;
 		entity.transform.localRotation = Quaternion.identity;
 		entity.transform.localScale = Vector3.one;
 		GameObject bars = (GameObject) Instantiate(GameManager.Instance.GetStatusBarPrefabForClass(entity.Class));
-		bars.transform.parent = barMounts[mountIndex++];
+		bars.transform.parent = entity.StatusBarMount;
 		bars.transform.localPosition = Vector3.zero;
-		bars.transform.localRotation = Quaternion.identity;
+		bars.transform.rotation = Quaternion.identity;
 		bars.transform.localScale = Vector3.one;
 		
 		StatusBarClipper[] clippers = bars.GetComponentsInChildren<StatusBarClipper>();
@@ -120,7 +118,7 @@ public class StageManager : MonoBehaviour
 			clipper.Entity = entity;
 		}
 		
-		entity.StatusBars = bars;
+		entity.SpriteController.StatusBars = bars;
 	}
 	
 	private void ClearMounts(Transform[] mounts)

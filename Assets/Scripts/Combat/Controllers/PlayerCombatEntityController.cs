@@ -89,8 +89,11 @@ public class PlayerCombatEntityController : CombatEntityController
 	
 	private void SelectTarget(CombatEntity entity)
 	{
-		_entity.UseSpell(_selectedSpell, entity);
-		_selectedSpell = null;
-		EndTurn();
+		if(CombatManager.Instance.InCombat && !_entity.IsDead)
+		{
+			_entity.UseSpell(_selectedSpell, entity);
+			_selectedSpell = null;
+			EndTurn();
+		}
 	}
 }

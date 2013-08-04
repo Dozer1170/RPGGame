@@ -9,8 +9,15 @@ public class CombatEntity : Entity
 	[SerializeField] private CombatEntityController _entityController;
 	[SerializeField] private EntitySpriteController _spriteController;
 	[SerializeField] private Transform _combatTextMount;
+	[SerializeField] private Transform _statusBarMount;
+	[SerializeField] private Transform _turnTimerMount;
 	
 	private static readonly float _healVariability = 0.10f;
+	
+	public int PlayerNum
+	{
+		get; set;
+	}
 	
 	public Transform TargetMount
 	{
@@ -20,11 +27,19 @@ public class CombatEntity : Entity
 		}
 	}
 	
-	public GameObject StatusBars
+	public Transform StatusBarMount
 	{
-		set
+		get
 		{
-			_spriteController.StatusBars = value;
+			return _statusBarMount;
+		}
+	}
+	
+	public Transform TurnTimerMount
+	{
+		get
+		{
+			return _turnTimerMount;
 		}
 	}
 	
@@ -83,6 +98,14 @@ public class CombatEntity : Entity
 		get
 		{
 			return _entityController;
+		}
+	}
+	
+	public EntitySpriteController SpriteController
+	{
+		get
+		{
+			return _spriteController;
 		}
 	}
 	
@@ -159,19 +182,22 @@ public class CombatEntity : Entity
 	
 	public void EndTurn()
 	{
-		CombatManager.Instance.CombatantFinishedTurn();
+		CombatManager.Instance.CombatantFinishedTurn(this);
 		_spriteController.EndTurn();
 		_srManager.EndTurn();
 	}
 	
 	public void UseSpell(Spell spell, CombatEntity target)
 	{
-		_srManager.UsedSpell(spell.secondaryCost + _stats.Level * spell.secondaryCostPerLevel);
-		
-		//TODO Hit roll calculation
-		HandleDamageFromSpell(spell, target);
-		HandleHealingFromSpell(spell, target);
-		HandleBuffsAndDebuffsFromSpell(spell, target);
+		if(target != null)
+		{
+			_srManager.UsedSpell(spell.secondaryCost + _stats.Level * spell.secondaryCostPerLevel);
+			
+			//TODO Hit roll calculation
+			HandleDamageFromSpell(spell, target);
+			HandleHealingFromSpell(spell, target);
+			HandleBuffsAndDebuffsFromSpell(spell, target);
+		}
 	}
 	
 	private void HandleDamageFromSpell(Spell spell, CombatEntity target)

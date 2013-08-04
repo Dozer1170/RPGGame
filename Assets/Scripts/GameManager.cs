@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class GameManager : MonoBehaviour
 {
 	[SerializeField] private GameObject _playerCharacterPrefab;
+	[SerializeField] private GameObject _turnTimerBar;
 	[SerializeField] private GameObject _mageBars;
 	[SerializeField] private GameObject _rogueBars;
 	[SerializeField] private GameObject _shadowMancerBars;
@@ -32,6 +33,14 @@ public class GameManager : MonoBehaviour
 	public Dictionary<string,Spell> SpellList
 	{
 		get; set;
+	}
+	
+	public GameObject TurnTimerPrefab
+	{
+		get
+		{
+			return _turnTimerBar;
+		}
 	}
 	
 	void Awake()

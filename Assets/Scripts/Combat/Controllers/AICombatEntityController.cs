@@ -18,17 +18,20 @@ public class AICombatEntityController : CombatEntityController
 	}
 	
 	private IEnumerator TakeTurn(float decisionDelay)
-	{	
-		Spell spell = DecideOnSpell();
-		CombatEntity target = DecideOnTarget(spell.targetType);
-	
+	{
 		yield return new WaitForSeconds(DECISION_DELAY);
 		
-		_entity.UseSpell(spell, target);
-	
-		yield return new WaitForSeconds(YIELD_TURN_DELAY);
+		if(CombatManager.Instance.InCombat && !_entity.IsDead)
+		{
+			Spell spell = DecideOnSpell();
+			CombatEntity target = DecideOnTarget(spell.targetType);
 		
-		EndTurn();
+			_entity.UseSpell(spell, target);
+	
+			yield return new WaitForSeconds(YIELD_TURN_DELAY);
+			
+			EndTurn();
+		}
 	}
 	
 	protected virtual Spell DecideOnSpell()

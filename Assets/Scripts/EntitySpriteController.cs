@@ -34,6 +34,19 @@ public class EntitySpriteController : MonoBehaviour
 		}
 	}
 	
+	private GameObject _turnTimer;
+	public GameObject TurnTimer
+	{
+		get
+		{
+			return _turnTimer;
+		}
+		set
+		{
+			_turnTimer = value;
+		}
+	}
+	
 	void Awake()
 	{
 		_sprite = (tk2dSprite) GetComponent(typeof(tk2dSprite));
@@ -75,8 +88,13 @@ public class EntitySpriteController : MonoBehaviour
 	
 	public void EntityDied()
 	{
-		StatusBars.SetActive(false);
+		_statusBars.SetActive(false);
 		StartCoroutine(FlickerSpriteOut());
+		
+		if(_turnTimer != null)
+		{
+			_turnTimer.transform.parent.gameObject.SetActive(false);
+		}
 	}
 	
 	public void EntityRevived()
@@ -92,6 +110,11 @@ public class EntitySpriteController : MonoBehaviour
 	public void EntityWasHealed()
 	{
 		StartCoroutine(FlickerColor(Color.green));
+	}
+	
+	public void FlipSprite()
+	{
+		_sprite.FlipX = !_sprite.FlipX;
 	}
 	
 	private IEnumerator FlickerSpriteOut()
