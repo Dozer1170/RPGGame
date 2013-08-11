@@ -8,6 +8,14 @@ Basic Attack
 	mainStatRatio:0.5
 	secondaryCost:0
 	weaponAttack:true
+	effect:Slash
+	damageTimes
+	[
+		time:0
+		mult:1
+		time:1
+		mult:0.5
+	]
 }
 
 Power Attack

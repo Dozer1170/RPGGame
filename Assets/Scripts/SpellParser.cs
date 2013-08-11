@@ -29,8 +29,12 @@ public class SpellParser
 		
 		bool parsingCasterMod = false;
 		bool parsingTargetMod = false;
+		bool parsingHealingEffectTimes = false;
+		bool parsingDamageEffectTimes = false;
 		Spell spell = new Spell();
 		StatMod mod = new StatMod();
+		EffectTimes effectTimes = new EffectTimes();
+		EffectTime effectTime = new EffectTime();
 		string line;
 		while((line = file.ReadLine()) != null)
 		{
@@ -56,13 +60,27 @@ public class SpellParser
 				{
 					spell.casterMod = mod;
 					parsingCasterMod = false;
+					mod = new StatMod();
 				}
 				else if(parsingTargetMod)
 				{
 					spell.targetMod = mod;
 					parsingTargetMod = false;
+					mod = new StatMod();
 				}
-				mod = new StatMod();
+				else if(parsingHealingEffectTimes)
+				{
+					spell.healingTimes = effectTimes;
+					parsingHealingEffectTimes = false;
+					effectTimes = new EffectTimes();
+				}
+				else if(parsingDamageEffectTimes)
+				{
+					spell.damageTimes = effectTimes;
+					parsingDamageEffectTimes = false;
+					effectTimes = new EffectTimes();
+				}
+				
 				continue;
 			}
 			else if(!trimmedLine.Contains(":") && trimmedLine == "casterMod")
@@ -72,6 +90,15 @@ public class SpellParser
 			else if(!trimmedLine.Contains(":") && trimmedLine == "targetMod")
 			{
 				parsingTargetMod = true;
+			}
+			else if(!trimmedLine.Contains(":") && trimmedLine == "healingTimes")
+			{
+				parsingHealingEffectTimes = true;
+				effectTimes.healing = true;
+			}
+			else if(!trimmedLine.Contains(":") && trimmedLine == "damageTimes")
+			{
+				parsingDamageEffectTimes = true;
 			}
 			else if(!trimmedLine.Contains(":"))
 			{
@@ -84,75 +111,92 @@ public class SpellParser
 				string[] property = trimmedLine.Split(':');
 				switch(property[0])
 				{
+					#region Base Spell Stat parsing
 					case "spellId":
 						spell.spellId = int.Parse(property[1]);
-					break;
+						break;
 					case "requiredLevel":
 						spell.requiredLevel = int.Parse(property[1]);
-					break;
+						break;
 					case "classRestricted":
 						spell.classRestricted = property[1] == "true";
-					break;
+						break;
 					case "targetType":
 						spell.targetType = GetTargetTypeFromName(property[1]);
-					break;
+						break;
 					case "entityClass":
 						spell.entityClass = GetClassFromName(property[1]);
-					break;
+						break;
 					case "secondaryCost":
 						spell.secondaryCost = float.Parse(property[1]);
-					break;
+						break;
 					case "secondaryCostPerLevel":
 						spell.secondaryCostPerLevel = float.Parse(property[1]);
-					break;
+						break;
 					case "mainStat":
 						spell.mainStat = GetStatFromName(property[1]);
-					break;
+						break;
 					case "mainStatRatio":
 						spell.mainStatRatio = float.Parse(property[1]);
-					break;
+						break;
 					case "weaponAttack":
 						spell.weaponAttack = property[1] == "true";
-					break;
+						break;
 					case "vampPercent":
 						spell.vampPercent = float.Parse(property[1]);
-					break;
+						break;
 					case "healBase":
 						spell.healBase = float.Parse(property[1]);
-					break;
+						break;
 					case "healBonusPerLevel":
 						spell.healBonusPerLevel = float.Parse(property[1]);
-					break;
+						break;
 					case "damageBase":
 						spell.damageBase = float.Parse(property[1]);
-					break;
+						break;
 					case "damageBonusPerLevel":
 						spell.damageBonusPerLevel = float.Parse(property[1]);
-					break;
+						break;
 					case "damageOverTimeBase":
 						spell.damageOverTimeBase = float.Parse(property[1]);
-					break;
+						break;
 					case "damageOverTimeBonusPerLevel":
 						spell.damageOverTimeBonusPerLevel = float.Parse(property[1]);
-					break;
+						break;
 					case "dotDuration":
 						spell.dotDuration = int.Parse(property[1]);
-					break;
+						break;
 					case "stackable":
 						spell.stackable = property[1] == "true";
-					break;
+						break;
+					case "effect":
+						spell.effectName = property[1];
+						break;
+					#endregion
+					#region Stat Mod Parsing
 					case "statAffected":
 						mod.statAffected = GetStatFromName(property[1]);
-					break;
+						break;
 					case "amount":
 						mod.amount = float.Parse(property[1]);
-					break;
+						break;
 					case "percentage":
 						mod.percentage = float.Parse(property[1]);
-					break;
+						break;
 					case "duration":
 						mod.durationLeft = int.Parse(property[1]);
-					break;
+						break;
+					#endregion
+					#region Effect Time Parsing
+					case "time":
+						effectTime.time = float.Parse(property[1]);
+						break;
+					case "mult":
+						effectTime.mult = float.Parse(property[1]);
+						effectTimes.AddEffectTime(effectTime);
+						effectTime = new EffectTime();
+						break;
+					#endregion
 					default:
 						Debug.LogError("Could not parse " + property[0] + " property");
 					break;

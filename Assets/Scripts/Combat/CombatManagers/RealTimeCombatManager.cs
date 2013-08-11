@@ -57,7 +57,7 @@ public class RealTimeCombatManager : CombatManager
 		{
 			if(_readyPlayerControlledEntities[entity.PlayerNum].Count > 0)
 			{
-				_readyPlayerControlledEntities[entity.PlayerNum].Dequeue().BeginTurn();
+				BeginNextPlayerEntityTurn(entity.PlayerNum);
 			}
 		}
 		
@@ -73,7 +73,7 @@ public class RealTimeCombatManager : CombatManager
 				CombatEntity entity = _combatantTimes[i].entity;
 				if(_combatantTimes[i].ReadyForTurn())
 				{
-					if(!entity.IsDead)
+					if(entity != null && !entity.IsDead)
 					{
 						if(entity.Controller is AICombatEntityController)
 						{
@@ -92,13 +92,22 @@ public class RealTimeCombatManager : CombatManager
 							
 							if(startTurn)
 							{
-								_readyPlayerControlledEntities[entity.PlayerNum].Dequeue().BeginTurn();
+								BeginNextPlayerEntityTurn(entity.PlayerNum);
 							}
 						}
 					}
 					RemoveTimer(i);
 				}
 			}
+		}
+	}
+	
+	private void BeginNextPlayerEntityTurn(int playerNum)
+	{
+		CombatEntity nextPlayerEntity = _readyPlayerControlledEntities[playerNum].Dequeue();
+		if(nextPlayerEntity != null)
+		{
+			nextPlayerEntity.BeginTurn();
 		}
 	}
 	

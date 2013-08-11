@@ -193,6 +193,8 @@ public class CombatEntity : Entity
 		{
 			_srManager.UsedSpell(spell.secondaryCost + _stats.Level * spell.secondaryCostPerLevel);
 			
+			SpellEffectManager.Instance.SpawnSpellEffect(target, spell.effectName);
+			
 			//TODO Hit roll calculation
 			HandleDamageFromSpell(spell, target);
 			HandleHealingFromSpell(spell, target);

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Spell
 {
@@ -25,6 +26,9 @@ public class Spell
 	public bool stackable;
 	public StatMod casterMod;
 	public StatMod targetMod;
+	public EffectTimes healingTimes;
+	public EffectTimes damageTimes;
+	public string effectName;
 	
 	public override string ToString ()
 	{
@@ -51,8 +55,48 @@ public class Spell
 				(casterMod != null ? "\nCaster Mod: " + casterMod.statAffected + ", Amount: " +
 						casterMod.amount + ", Percentage: " + casterMod.percentage + ", Duration: " + casterMod.durationLeft : "")  +
 				(targetMod != null ? "\nTarget Mod: " + targetMod.statAffected + ", Amount: " +
-						targetMod.amount + ", Percentage: " + targetMod.percentage + ", Duration: " + targetMod.durationLeft : "");
+						targetMod.amount + ", Percentage: " + targetMod.percentage + ", Duration: " + targetMod.durationLeft : "")  +
+				(healingTimes == null ? "" : healingTimes.ToString()) +
+				(damageTimes == null ? "" : damageTimes.ToString()) +
+				"\nEffect Name: " + effectName;
 	}
+}
+
+public class EffectTimes
+{
+	public bool healing;
+	public List<EffectTime> times = new List<EffectTime>();
+	
+	public void AddEffectTime(float time, float mult)
+	{
+		EffectTime effectTime = new EffectTime();
+		effectTime.time = time;
+		effectTime.mult = mult;
+		times.Add(effectTime);
+	}
+	
+	public void AddEffectTime(EffectTime time)
+	{
+		times.Add(time);
+	}
+	
+	public override string ToString ()
+	{
+		string rval = "";
+		rval += healing ? "\nHealing Times:" : "\nDamage Times:";
+		foreach(EffectTime effectTime in times)
+		{
+			rval += "\n\tTime: " + effectTime.time + " Mult: " + effectTime.mult;
+		}
+		return rval;
+	}
+}
+
+[System.Serializable]
+public class EffectTime
+{
+	public float time;
+	public float mult;
 }
 
 public enum TargetType
